@@ -6,32 +6,19 @@ public class CardBuilder {
 
     static public Card createCard(CardInput cardInput) {
 
-        switch (cardInput.getName()) {
-            case "Sentinel":
-                return new Sentinel(cardInput);
-            case "Berserker":
-                return new Berserker(cardInput);
-            case "Goliath":
-                return new Goliath(cardInput);
-            case "Warden":
-                return new Warden(cardInput);
-            case "The Ripper":
-                return new TheRipper(cardInput);
-            case "Miraj":
-                return new Miraj(cardInput);
-            case "The Cursed One":
-                return new TheCursedOne(cardInput);
-            case "Disciple":
-                return new Disciple(cardInput);
-            case "Firestorm":
-                return new Firestorm(cardInput);
-            case "Winterfell":
-                return new Winterfell(cardInput);
-            case "Heart Hound":
-                return new HeartHound(cardInput);
-            default:
-                break;
-        }
-        return null;
+        return switch (cardInput.getName()) {
+            case "Sentinel" -> new Sentinel(cardInput);
+            case "Berserker" -> new Berserker(cardInput);
+            case "Goliath" -> new Goliath(cardInput);
+            case "Warden" -> new Warden(cardInput);
+            case "The Ripper" -> new TheRipper(cardInput);
+            case "Miraj" -> new Miraj(cardInput);
+            case "The Cursed One" -> new TheCursedOne(cardInput);
+            case "Disciple" -> new Disciple(cardInput);
+            case "Firestorm" -> new Firestorm(cardInput);
+            case "Winterfell" -> new Winterfell(cardInput);
+            case "Heart Hound" -> new HeartHound(cardInput);
+            default -> null;
+        };
     }
 }

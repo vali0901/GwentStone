@@ -1,6 +1,7 @@
 package cards;
 
 import fileio.CardInput;
+import gameEnvironment.Row;
 
 import java.util.ArrayList;
 
@@ -10,7 +11,7 @@ public abstract class Hero {
     private String description;
     private ArrayList<String> colors;
     private String name;
-
+    private boolean hasAttacked;
 
     public int getHealth() {
         return health;
@@ -52,14 +53,27 @@ public abstract class Hero {
         this.name = name;
     }
 
-    public void isAttacked(int damage) {
-        this.health -= damage;
-        if (health <= 0) {
-            //endgame
-        }
+    public boolean hasAttacked() {
+        return hasAttacked;
     }
 
-    public abstract void ability(Minion[] row);
+    public void setHasAttacked(boolean hasAttacked) {
+        this.hasAttacked = hasAttacked;
+    }
+
+    public boolean isAttacked(int damage) {
+        this.health -= damage;
+        if (health <= 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isFriendly() {
+        return this instanceof GeneralKocioraw || this instanceof KingMudface;
+    }
+
+    public abstract void ability(Row row);
 }
 
 class LordRoyce extends Hero {
@@ -72,11 +86,12 @@ class LordRoyce extends Hero {
     }
 
     @Override
-    public void ability(Minion[] row) {
-        Minion theFrozenOne = row[0];
+    public void ability(Row row) {
+        setHasAttacked(true);
+        Minion theFrozenOne = row.getMinion(0);
         for(int i = 1; i < 5; i++)
-            if(row[i].getAttackDamage() > theFrozenOne.getAttackDamage())
-                theFrozenOne = row[i];
+            if(row.getMinions()[i] != null && row.getMinions()[i].getAttackDamage() > theFrozenOne.getAttackDamage())
+                theFrozenOne = row.getMinions()[i];
         theFrozenOne.setIsFrozen(true);
     }
 }
@@ -91,12 +106,19 @@ class EmpressThorina extends Hero {
     }
 
     @Override
-    public void ability(Minion[] row) {
-        Minion theDestroyedOne = row[0];
+    public void ability(Row row) {
+        setHasAttacked(true);
+        Minion theDestroyedOne = row.getMinion(0);
+
+        int index = 0;
         for(int i = 1; i < 5; i++)
-            if(row[i].getHealth() > theDestroyedOne.getHealth())
-                theDestroyedOne = row[i];
-        // destroy theDDestryed one
+            if(row.getMinion(i) != null && row.getMinion(i).getHealth() > theDestroyedOne.getHealth()) {
+                theDestroyedOne = row.getMinion(i);
+                index  = i;
+            }
+
+        if(theDestroyedOne != null)
+            row.removeMinion(index);
     }
 }
 
@@ -110,9 +132,11 @@ class KingMudface extends Hero {
     }
 
     @Override
-    public void ability(Minion[] row) {
-        for(Minion minion : row)
-            minion.setHealth(minion.getHealth() + 1);
+    public void ability(Row row) {
+        setHasAttacked(true);
+        for(Minion minion : row.getMinions())
+            if(minion != null)
+                minion.setHealth(minion.getHealth() + 1);
     }
 }
 
@@ -126,8 +150,10 @@ class GeneralKocioraw extends Hero {
     }
 
     @Override
-    public void ability(Minion[] row) {
-        for(Minion minion : row)
-            minion.setAttackDamage(minion.getAttackDamage() + 1);
+    public void ability(Row row) {
+        setHasAttacked(true);
+        for(Minion minion : row.getMinions())
+            if(minion != null)
+                minion.setAttackDamage(minion.getAttackDamage() + 1);
     }
 }

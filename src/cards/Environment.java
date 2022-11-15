@@ -2,16 +2,15 @@ package cards;
 
 
 import fileio.CardInput;
+import gameEnvironment.Row;
 
 import java.util.ArrayList;
 
 public abstract class Environment implements Card {
-    // DE SCHIMBAT ARGUMENTELE LA DOEFFECT
-    private final int type = 0;
 
     @Override
     public int getType() {
-        return type;
+        return 2;
     }
 
     private int mana;
@@ -51,7 +50,10 @@ public abstract class Environment implements Card {
         this.name = name;
     }
 
-    public abstract void doEffect(Minion[] enemyMinions, Minion[] friendlyMinions);
+    public boolean isHeartHound() {
+        return this instanceof HeartHound;
+    }
+    public abstract void doEffect(Row enemyMinions, Row friendlyMinions);
 }
 
 class Firestorm extends  Environment {
@@ -64,8 +66,8 @@ class Firestorm extends  Environment {
     }
 
     @Override
-    public void doEffect(Minion[] enemyMinions, Minion[] friendlyMinions) {
-        for(Minion minion : enemyMinions)
+    public void doEffect(Row enemyMinions, Row friendlyMinions) {
+        for(Minion minion : enemyMinions.getMinions())
             if(minion != null)
                 minion.isAttacked(1);
     }
@@ -81,8 +83,8 @@ class Winterfell extends  Environment {
     }
 
     @Override
-    public void doEffect(Minion[] enemyMinions, Minion[] friendlyMinions) {
-        for(Minion minion : enemyMinions)
+    public void doEffect(Row enemyMinions, Row friendlyMinions) {
+        for(Minion minion : enemyMinions.getMinions())
             if(minion != null)
                 minion.setIsFrozen(true);
     }
@@ -98,10 +100,15 @@ class HeartHound extends  Environment {
     }
 
     @Override
-    public void doEffect(Minion[] enemyMinions, Minion[] friendlyMinions) {
-        Minion theStolenOne = enemyMinions[0];
+    public void doEffect(Row enemyMinions, Row friendlyMinions) {
+        Minion theStolenOne = enemyMinions.getMinion(0);
+        int index = 0;
         for(int i = 1; i < 5; i++)
-            if(enemyMinions[i] != null && enemyMinions[i].getHealth() > theStolenOne.getHealth())
-                theStolenOne = enemyMinions[i];
+            if(enemyMinions.getMinion(i) != null && enemyMinions.getMinion(i).getHealth() > theStolenOne.getHealth()) {
+                theStolenOne = enemyMinions.getMinion(i);
+                index = i;
+            }
+        enemyMinions.removeMinion(index);
+        friendlyMinions.addMinion(theStolenOne);
     }
 }

@@ -5,11 +5,10 @@ import fileio.CardInput;
 import java.util.ArrayList;
 
 public abstract class Minion implements Card {
-    private final int type = 1;
 
     @Override
     public int getType() {
-        return type;
+        return 1;
     }
 
     private int mana;
@@ -104,16 +103,42 @@ public abstract class Minion implements Card {
         this.firstRow = firstRow;
     }
 
-    public void attack(Minion minion) {
-        minion.isAttacked(this.attackDamage);
+    public boolean attack(Minion minion) {
+        this.hasAttacked = true;
+        return minion.isAttacked(this.attackDamage);
     };
 
-    public void isAttacked(int damage) {
-        this.health -= damage;
-        if(health <= 0) {
+    public boolean attack(Hero hero) {
+        this.hasAttacked = true;
+        return hero.isAttacked(this.attackDamage);
+    };
 
-        }
+    public boolean isAttacked(int damage) {
+        this.health -= damage;
+        return health <= 0;
     }
+
+    @Override
+    public String toString() {
+        return "{"
+                +  "mana="
+                + mana
+                +  ", attackDamage="
+                + attackDamage
+                + ", health="
+                + health
+                +  ", description='"
+                + description
+                + '\''
+                + ", colors="
+                + colors
+                + ", name='"
+                +  ""
+                + name
+                + '\''
+                + '}';
+    }
+
 }
 
 class Sentinel extends Minion {
@@ -124,6 +149,9 @@ class Sentinel extends Minion {
         this.setDescription(cardInput.getDescription());
         this.setColors(cardInput.getColors());
         this.setName(cardInput.getName());
+
+        this.setHasAttacked(false);
+        this.setIsFrozen(false);
     }
 }
 
@@ -135,6 +163,9 @@ class Berserker extends Minion {
         this.setDescription(cardInput.getDescription());
         this.setColors(cardInput.getColors());
         this.setName(cardInput.getName());
+
+        this.setHasAttacked(false);
+        this.setIsFrozen(false);
     }
 
 }
@@ -148,6 +179,9 @@ class Goliath extends Minion {
         this.setDescription(cardInput.getDescription());
         this.setColors(cardInput.getColors());
         this.setName(cardInput.getName());
+
+        this.setHasAttacked(false);
+        this.setIsFrozen(false);
 
         this.setFirstRow(true);
         this.setIsTank(true);
@@ -164,93 +198,15 @@ class Warden extends Minion {
         this.setColors(cardInput.getColors());
         this.setName(cardInput.getName());
 
+        this.setHasAttacked(false);
+        this.setIsFrozen(false);
+
         this.setFirstRow(true);
         this.setIsTank(true);
     }
 }
 
-abstract class SpecialMinion extends Minion {
-    public abstract void ability(Minion minion);
-}
 
-class Miraj extends SpecialMinion {
-
-    public Miraj(CardInput cardInput) {
-        this.setMana(cardInput.getMana());
-        this.setHealth(cardInput.getHealth());
-        this.setAttackDamage(cardInput.getAttackDamage());
-        this.setDescription(cardInput.getDescription());
-        this.setColors(cardInput.getColors());
-        this.setName(cardInput.getName());
-
-        this.setFirstRow(true);
-    }
-
-    @Override
-    public void ability(Minion minion) {
-        int aux = this.getHealth();
-        this.setHealth(minion.getHealth());
-        minion.setHealth(aux);
-    }
-}
-
-class TheRipper extends SpecialMinion {
-
-    public TheRipper(CardInput cardInput) {
-        this.setMana(cardInput.getMana());
-        this.setHealth(cardInput.getHealth());
-        this.setAttackDamage(cardInput.getAttackDamage());
-        this.setDescription(cardInput.getDescription());
-        this.setColors(cardInput.getColors());
-        this.setName(cardInput.getName());
-
-        this.setFirstRow(true);
-    }
-
-    @Override
-    public void ability(Minion minion) {
-        isAttacked(2);
-    }
-}
-
-class Disciple extends SpecialMinion {
-    public Disciple(CardInput cardInput) {
-        this.setMana(cardInput.getMana());
-        this.setHealth(cardInput.getHealth());
-        this.setAttackDamage(cardInput.getAttackDamage());
-        this.setDescription(cardInput.getDescription());
-        this.setColors(cardInput.getColors());
-        this.setName(cardInput.getName());
-    }
-
-    @Override
-    public void ability(Minion minion) {
-        minion.setHealth(minion.getHealth() + 2);
-    }
-}
-
-class TheCursedOne extends SpecialMinion {
-
-    public TheCursedOne(CardInput cardInput) {
-        this.setMana(cardInput.getMana());
-        this.setHealth(cardInput.getHealth());
-        this.setAttackDamage(cardInput.getAttackDamage());
-        this.setDescription(cardInput.getDescription());
-        this.setColors(cardInput.getColors());
-        this.setName(cardInput.getName());
-    }
-
-    @Override
-    public void ability(Minion minion) {
-        int aux = this.getHealth();
-        this.setHealth(minion.getHealth());
-        minion.setHealth(aux);
-
-        aux = this.getAttackDamage();
-        this.setAttackDamage(minion.getAttackDamage());
-        minion.setAttackDamage(aux);
-    }
-}
 
 
 
