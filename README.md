@@ -1,44 +1,45 @@
+# OOP Homework - GwentStone
 
-
-# Tema POO  - GwentStone
-
-<div align="center"><img src="https://tenor.com/view/witcher3-gif-9340436.gif" width="500px"></div>
-
-#### Assignment Link: [https://ocw.cs.pub.ro/courses/poo-ca-cd/teme/tema](https://ocw.cs.pub.ro/courses/poo-ca-cd/teme/tema)
-
-
-## Skel Structure
-
-* src/
-  * checker/ - checker files
-  * fileio/ - contains classes used to read data from the json files
-  * main/
-      * Main - the Main class runs the checker on your implementation. Add the entry point to your implementation in it. Run Main to test your implementation from the IDE or from command line.
-      * Test - run the main method from Test class with the name of the input file from the command line and the result will be written
-        to the out.txt file. Thus, you can compare this result with ref.
-* input/ - contains the tests in JSON format
-* ref/ - contains all reference output for the tests in JSON format
-
-## Tests
-
-1. test01_game_start - 3p
-2. test02_place_card - 4p
-3. test03_place_card_invalid - 4p
-4. test04_use_env_card - 4p
-5. test05_use_env_card_invalid - 4p
-6. test06_attack_card - 4p
-7. test07_attack_card_invalid - 4p
-8. test08_use_card_ability - 4p
-9. test09_use_card_ability_invalid -4p
-10. test10_attack_hero - 4p
-11. test11_attack_hero_invalid - 4p
-12. test12_use_hero_ability_1 - 4p
-13. test13_use_hero_ability_2 - 4p
-14. test14_use_hero_ability_invalid_1 - 4p
-15. test15_use_hero_ability_invalid_2 - 4p
-16. test16_multiple_games_valid - 5p
-17. test17_multiple_games_invalid - 6p
-18. test18_big_game - 10p
-
-
-<div align="center"><img src="https://tenor.com/view/homework-time-gif-24854817.gif" width="500px"></div>
+## Class descrpition
+* **Table** class -> designed as a singleton, it has two fields representing the two **players**,
+  one that counts the number of games played and another one that indicates the current
+  player's id; the most important methods here are 'startGame' (which calls a method
+  that initialises the values of each player) and 'newRound' (which calls methods for 
+  adding mana and dealing a new card to each player)
+* **Player** class -> contains a deck (ArrayList of **Cards**), hero (of type **Hero**), hand
+  (ArrayList of **Cards**), mana, two **rows** (one front row and one back row) which are initialised in 'initPLayer' method; another important method besides
+  'initPlayer' is 'endPlayerTurn' which unfreezes all the frozen minions and unmark every
+  card and hero that has used its attack / ability
+* **Row** class -> contains an array of **Minions**, size and methods that manipulate the minions
+  on this row (removing, adding, removing all dead minions)
+* **Card** interface -> used for describing the cards in a deck, being implemented by **Minion**
+  and **Environment** abstract classes
+* **Minion** abstract class -> describes a card that can be placed on a **row** and has the
+  following attributes: mana, health, attack damage, name, descriptions, color; it can
+  attack ('attack' method, one for a minion and one for a hero), can be attacked
+  ('isAttacked' method); also, depending on the type of the minion, it can be 'Tank' 
+  ('isTank' field), and can be placed only on the first or the second row ('firstRow' field);
+  this class is extended by another abstract class (**SpecialMinion**) and by the four types
+  of minions (**Sentinel**, **Berserker**, **Goliath**, **Warden**)
+* **SpecialMinion** abstract class -> extends **Minion** and describes a minion that has a special
+  ability that affects other minion; it is extended by four classes representing the four
+  minions with special abilities (**Disciple**, **TheCursedOne**, **TheRipper**, **Miraj**)
+* **Environment** abstract class -> describes a card that cannot be placed on the table, who
+  changes the 'environment' of the game; it contains fields like mana, name, description
+  and colors, and a method that represent this card's ability which can apply on an enemy
+  row or a friendly one; this class is extended by the three environment cards of this game
+  (**Firestorm**, **Winterfell**, **HeartHound**)
+* **Hero** abstract class -> describes a hero and contains the following fields: health, mana,
+  description, name, colors; it can be attacked ('isAttacked' method) or it can use its
+  ability which applies on a friendly or an enemy row; the four types of hero in this game
+  are represented by the classes that extend this abstract class (**LordRoyce**, **EmpressThorina**,
+  **KingMudface**, **GeneralKocioraw**)
+* **CardBuilder** and **HeroBuilder** classes -> utility classes, used for creating a new object
+  depending on the CardInput
+* **ActionMaker** class -> the only method of this class takes the ActionInput and, depending on
+  the command it either gives an output or calls the required methods, only after checking
+  all the needed invalid cases; it uses **OutputFactory** class for creating an output
+* **OutputFactory** class -> it has a method which adds an output in the given ArrayNode; it uses
+  specific classes for every type of output
+* **MagicNumbers** class -> used for keeping useful constants
+  
