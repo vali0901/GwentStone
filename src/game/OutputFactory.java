@@ -1,75 +1,101 @@
-package gameEnvironment;
+package game;
 
-import cards.*;
+import cards.Card;
+import cards.Minion;
+import cards.Environment;
+import cards.Hero;
+
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.Coordinates;
 
 import java.util.ArrayList;
 
-public class OutputFactory {
+public final class OutputFactory {
 
-    public static void outputBuilder(ArrayNode node, String command, Object arg1, Object arg2, Object arg3) {
+    private OutputFactory() { }
+
+    /**
+     * Builds a specific object for the given command that will be placed in the given ArrayNode;
+     * the arguments must be given in an exact order as it is showed in the output examples
+     * @param node The Array where the output will be placed
+     * @param command The command that requires an output
+     * @param arg1 Content of the output (might be null)
+     * @param arg2 Content of the output (might be null)
+     * @param arg3 Content of the output (might be null)
+     */
+    public static void outputBuilder(
+            final ArrayNode node, final String command, final Object arg1, final Object arg2,
+            final Object arg3) {
         switch (command) {
             case "placeCard" -> {
                 PlaceCardOutput output = new PlaceCardOutput(command, (int) arg1, (String) arg2);
                 node.addPOJO(output);
             }
             case "cardUsesAttack" -> {
-                CardUsesAttackOutput output = new CardUsesAttackOutput(command, (Coordinates) arg1, (Coordinates) arg2, (String) arg3);
+                CardUsesAttackOutput output = new CardUsesAttackOutput(command,
+                        (Coordinates) arg1, (Coordinates) arg2, (String) arg3);
                 node.addPOJO(output);
             }
             case "cardUsesAbility" -> {
-                CardUsesAbilityOutput output = new CardUsesAbilityOutput(command, (Coordinates) arg1, (Coordinates) arg2, (String) arg3);
+                CardUsesAbilityOutput output = new CardUsesAbilityOutput(command,
+                        (Coordinates) arg1, (Coordinates) arg2, (String) arg3);
                 node.addPOJO(output);
             }
             case "useAttackHero" -> {
-                if(arg2 == null) {
+                if (arg2 == null) {
                     GameEndOutput output = new GameEndOutput((String) arg1);
                     node.addPOJO(output);
                 } else {
-                    UseAttackHeroOutput output = new UseAttackHeroOutput(command, (Coordinates) arg1, (String) arg2);
+                    UseAttackHeroOutput output = new UseAttackHeroOutput(command,
+                            (Coordinates) arg1, (String) arg2);
                     node.addPOJO(output);
                 }
             }
             case "useHeroAbility" -> {
-                UseHeroAbilityOutput output = new UseHeroAbilityOutput(command, (int) arg1, (String) arg2);
+                UseHeroAbilityOutput output = new UseHeroAbilityOutput(command,
+                        (int) arg1, (String) arg2);
                 node.addPOJO(output);
             }
             case "useEnvironmentCard" -> {
-                UseEnvironmentCardOutput output = new UseEnvironmentCardOutput(command, (int) arg1, (int) arg2, (String) arg3);
+                UseEnvironmentCardOutput output = new UseEnvironmentCardOutput(command,
+                        (int) arg1, (int) arg2, (String) arg3);
                 node.addPOJO(output);
             }
             case "getCardsInHand" -> {
-                ArrayList<CardOutput> cardsOutput= new ArrayList<>();
-                for(Card card : (ArrayList<Card>) arg2) {
+                ArrayList<CardOutput> cardsOutput = new ArrayList<>();
+                for (Card card : (ArrayList<Card>) arg2) {
                     CardOutput cardOutput;
-                    if(card instanceof Minion)
+                    if (card instanceof Minion) {
                         cardOutput = new MinionOutput((Minion) card);
-                    else
+                    } else {
                         cardOutput = new EnvironmentOutput((Environment) card);
+                    }
                     cardsOutput.add(cardOutput);
                 }
-                GetCardsInHandOutput output = new GetCardsInHandOutput(command, (int) arg1, cardsOutput);
+                GetCardsInHandOutput output = new GetCardsInHandOutput(command,
+                        (int) arg1, cardsOutput);
                 node.addPOJO(output);
             }
             case "getPlayerDeck" -> {
-                ArrayList<CardOutput> cardsOutput= new ArrayList<>();
-                for(Card card : (ArrayList<Card>) arg2) {
+                ArrayList<CardOutput> cardsOutput = new ArrayList<>();
+                for (Card card : (ArrayList<Card>) arg2) {
                     CardOutput cardOutput;
-                    if(card instanceof Minion)
+                    if (card instanceof Minion) {
                         cardOutput = new MinionOutput((Minion) card);
-                    else
+                    } else {
                         cardOutput = new EnvironmentOutput((Environment) card);
+                    }
                     cardsOutput.add(cardOutput);
                 }
-                GetPLayerDeckOutput output = new GetPLayerDeckOutput(command, (int) arg1, cardsOutput);
+                GetPLayerDeckOutput output = new GetPLayerDeckOutput(command,
+                        (int) arg1, cardsOutput);
                 node.addPOJO(output);
             }
             case "getCardsOnTable" -> {
-                ArrayList<ArrayList<MinionOutput>> cardsOutput= new ArrayList<>();
-                for(ArrayList<Minion> arr : (ArrayList<ArrayList<Minion>>) arg1) {
+                ArrayList<ArrayList<MinionOutput>> cardsOutput = new ArrayList<>();
+                for (ArrayList<Minion> arr : (ArrayList<ArrayList<Minion>>) arg1) {
                     ArrayList<MinionOutput> aux = new ArrayList<>();
-                    for(Minion card : arr) {
+                    for (Minion card : arr) {
                         MinionOutput cardOutput;
                         cardOutput = new MinionOutput(card);
                         aux.add(cardOutput);
@@ -86,49 +112,57 @@ public class OutputFactory {
             }
             case "getPlayerHero" -> {
                 HeroOutput heroOutput = new HeroOutput((Hero) arg2);
-                GetPlayerHeroOutput output = new GetPlayerHeroOutput(command, (int) arg1, heroOutput);
+                GetPlayerHeroOutput output = new GetPlayerHeroOutput(command,
+                        (int) arg1, heroOutput);
                 node.addPOJO(output);
             }
             case "getCardAtPosition" -> {
                 Object output;
-                if (arg3 instanceof String)
-                    output = new GetCardAtPositionOutputError(command, (int) arg1, (int) arg2, (String) arg3);
-                else {
+                if (arg3 instanceof String) {
+                    output = new GetCardAtPositionOutputError(command,
+                            (int) arg1, (int) arg2, (String) arg3);
+                } else {
                     MinionOutput minionOutput = new MinionOutput((Minion) arg3);
-                    output = new GetCardAtPositionOutputSuccess(command, (int) arg1, (int) arg2, minionOutput);
+                    output = new GetCardAtPositionOutputSuccess(command,
+                            (int) arg1, (int) arg2, minionOutput);
                 }
                 node.addPOJO(output);
             }
             case "getPlayerMana" -> {
-                GetPLayerManaOutput output = new GetPLayerManaOutput(command, (int) arg1, (int) arg2);
+                GetPLayerManaOutput output = new GetPLayerManaOutput(command,
+                        (int) arg1, (int) arg2);
                 node.addPOJO(output);
             }
             case "getEnvironmentCardsInHand" -> {
-                ArrayList<EnvironmentOutput> cardsOutput= new ArrayList<>();
-                for(Environment card : (ArrayList<Environment>) arg2) {
+                ArrayList<EnvironmentOutput> cardsOutput = new ArrayList<>();
+                for (Environment card : (ArrayList<Environment>) arg2) {
                     EnvironmentOutput cardOutput;
                     cardOutput = new EnvironmentOutput(card);
                     cardsOutput.add(cardOutput);
                 }
-                GetEnvironmentCardsInHandOutput output = new GetEnvironmentCardsInHandOutput(command, (int) arg1, cardsOutput);
+                GetEnvironmentCardsInHandOutput output = new GetEnvironmentCardsInHandOutput(
+                        command, (int) arg1, cardsOutput);
                 node.addPOJO(output);
             }
             case "getFrozenCardsOnTable" -> {
-                ArrayList<MinionOutput> cardsOutput= new ArrayList<>();
-                for(Minion card : (ArrayList<Minion>) arg1) {
+                ArrayList<MinionOutput> cardsOutput = new ArrayList<>();
+                for (Minion card : (ArrayList<Minion>) arg1) {
                     MinionOutput cardOutput;
                     cardOutput = new MinionOutput(card);
                     cardsOutput.add(cardOutput);
                 }
-                GetFrozenCardsOnTableOutput output = new GetFrozenCardsOnTableOutput(command, cardsOutput);
+                GetFrozenCardsOnTableOutput output = new GetFrozenCardsOnTableOutput(command,
+                        cardsOutput);
                 node.addPOJO(output);
             }
             case "getTotalGamesPlayed" -> {
-                GetTotalGamesPlayedOutput output = new GetTotalGamesPlayedOutput(command, (int) arg1);
+                GetTotalGamesPlayedOutput output = new GetTotalGamesPlayedOutput(command,
+                        (int) arg1);
                 node.addPOJO(output);
             }
             case "getPlayerOneWins", "getPlayerTwoWins" -> {
-                GetPlayerTotalWinsOutput output = new GetPlayerTotalWinsOutput(command, (int) arg1);
+                GetPlayerTotalWinsOutput output = new GetPlayerTotalWinsOutput(command,
+                        (int) arg1);
                 node.addPOJO(output);
             }
             default -> {
@@ -142,7 +176,7 @@ class PlaceCardOutput {
     private int handIdx;
     private String error;
 
-    public PlaceCardOutput (String command, int handIdx, String error) {
+    PlaceCardOutput(final String command, final int handIdx, final String error) {
         this.command = command;
         this.handIdx = handIdx;
         this.error = error;
@@ -152,7 +186,7 @@ class PlaceCardOutput {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(final String command) {
         this.command = command;
     }
 
@@ -160,7 +194,7 @@ class PlaceCardOutput {
         return handIdx;
     }
 
-    public void setHandIdx(int handIdx) {
+    public void setHandIdx(final int handIdx) {
         this.handIdx = handIdx;
     }
 
@@ -168,7 +202,7 @@ class PlaceCardOutput {
         return error;
     }
 
-    public void setError(String error) {
+    public void setError(final String error) {
         this.error = error;
     }
 }
@@ -179,7 +213,8 @@ class CardUsesAttackOutput {
     private Coordinates cardAttacked;
     private String error;
 
-    public CardUsesAttackOutput (String command, Coordinates cardAttacker, Coordinates cardAttacked, String error) {
+    CardUsesAttackOutput(final String command, final Coordinates cardAttacker,
+                         final Coordinates cardAttacked, final String error) {
         this.command = command;
 
         this.cardAttacker = new Coordinates();
@@ -197,7 +232,7 @@ class CardUsesAttackOutput {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(final String command) {
         this.command = command;
     }
 
@@ -205,7 +240,7 @@ class CardUsesAttackOutput {
         return cardAttacker;
     }
 
-    public void setCardAttacker(Coordinates cardAttacker) {
+    public void setCardAttacker(final Coordinates cardAttacker) {
         this.cardAttacker = cardAttacker;
     }
 
@@ -213,7 +248,7 @@ class CardUsesAttackOutput {
         return cardAttacked;
     }
 
-    public void setCardAttacked(Coordinates cardAttacked) {
+    public void setCardAttacked(final Coordinates cardAttacked) {
         this.cardAttacked = cardAttacked;
     }
 
@@ -221,7 +256,7 @@ class CardUsesAttackOutput {
         return error;
     }
 
-    public void setError(String error) {
+    public void setError(final String error) {
         this.error = error;
     }
 }
@@ -232,7 +267,8 @@ class CardUsesAbilityOutput {
     private Coordinates cardAttacked;
     private String error;
 
-    public CardUsesAbilityOutput (String command, Coordinates cardAttacker, Coordinates cardAttacked, String error) {
+    CardUsesAbilityOutput(final String command, final Coordinates cardAttacker,
+                          final Coordinates cardAttacked, final String error) {
         this.command = command;
         this.cardAttacker = cardAttacker;
         this.cardAttacked = cardAttacked;
@@ -243,7 +279,7 @@ class CardUsesAbilityOutput {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(final String command) {
         this.command = command;
     }
 
@@ -251,7 +287,7 @@ class CardUsesAbilityOutput {
         return cardAttacker;
     }
 
-    public void setCardAttacker(Coordinates cardAttacker) {
+    public void setCardAttacker(final Coordinates cardAttacker) {
         this.cardAttacker = cardAttacker;
     }
 
@@ -259,7 +295,7 @@ class CardUsesAbilityOutput {
         return cardAttacked;
     }
 
-    public void setCardAttacked(Coordinates cardAttacked) {
+    public void setCardAttacked(final Coordinates cardAttacked) {
         this.cardAttacked = cardAttacked;
     }
 
@@ -267,7 +303,7 @@ class CardUsesAbilityOutput {
         return error;
     }
 
-    public void setError(String error) {
+    public void setError(final String error) {
         this.error = error;
     }
 }
@@ -277,7 +313,7 @@ class UseAttackHeroOutput {
     private Coordinates cardAttacker;
     private String error;
 
-    public UseAttackHeroOutput(String command, Coordinates cardAttacker, String error) {
+    UseAttackHeroOutput(final String command, final Coordinates cardAttacker, final String error) {
         this.command = command;
         this.cardAttacker = cardAttacker;
         this.error = error;
@@ -288,7 +324,7 @@ class UseAttackHeroOutput {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(final String command) {
         this.command = command;
     }
 
@@ -296,7 +332,7 @@ class UseAttackHeroOutput {
         return cardAttacker;
     }
 
-    public void setCardAttacker(Coordinates cardAttacker) {
+    public void setCardAttacker(final Coordinates cardAttacker) {
         this.cardAttacker = cardAttacker;
     }
 
@@ -304,7 +340,7 @@ class UseAttackHeroOutput {
         return error;
     }
 
-    public void setError(String error) {
+    public void setError(final String error) {
         this.error = error;
     }
 }
@@ -312,7 +348,7 @@ class UseAttackHeroOutput {
 class GameEndOutput {
     private String gameEnded;
 
-    public GameEndOutput (String gameEnded) {
+    GameEndOutput(final String gameEnded) {
         this.gameEnded = gameEnded;
     }
 
@@ -320,7 +356,7 @@ class GameEndOutput {
         return gameEnded;
     }
 
-    public void setGameEnded(String gameEnded) {
+    public void setGameEnded(final String gameEnded) {
         this.gameEnded = gameEnded;
     }
 }
@@ -330,7 +366,7 @@ class UseHeroAbilityOutput {
     private int affectedRow;
     private String error;
 
-    public UseHeroAbilityOutput(String command, int affectedRow, String error) {
+    UseHeroAbilityOutput(final String command, final int affectedRow, final String error) {
         this.command = command;
         this.affectedRow = affectedRow;
         this.error = error;
@@ -340,7 +376,7 @@ class UseHeroAbilityOutput {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(final String command) {
         this.command = command;
     }
 
@@ -348,7 +384,7 @@ class UseHeroAbilityOutput {
         return affectedRow;
     }
 
-    public void setAffectedRow(int affectedRow) {
+    public void setAffectedRow(final int affectedRow) {
         this.affectedRow = affectedRow;
     }
 
@@ -356,7 +392,7 @@ class UseHeroAbilityOutput {
         return error;
     }
 
-    public void setError(String error) {
+    public void setError(final String error) {
         this.error = error;
     }
 }
@@ -367,7 +403,8 @@ class UseEnvironmentCardOutput {
     private int affectedRow;
     private String error;
 
-    public UseEnvironmentCardOutput(String command, int handIdx, int affectedRow, String error) {
+    UseEnvironmentCardOutput(final String command, final int handIdx, final int affectedRow,
+                             final String error) {
         this.command = command;
         this.handIdx = handIdx;
         this.affectedRow = affectedRow;
@@ -378,7 +415,7 @@ class UseEnvironmentCardOutput {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(final String command) {
         this.command = command;
     }
 
@@ -386,7 +423,7 @@ class UseEnvironmentCardOutput {
         return handIdx;
     }
 
-    public void setHandIdx(int handIdx) {
+    public void setHandIdx(final int handIdx) {
         this.handIdx = handIdx;
     }
 
@@ -394,7 +431,7 @@ class UseEnvironmentCardOutput {
         return affectedRow;
     }
 
-    public void setAffectedRow(int affectedRow) {
+    public void setAffectedRow(final int affectedRow) {
         this.affectedRow = affectedRow;
     }
 
@@ -402,7 +439,7 @@ class UseEnvironmentCardOutput {
         return error;
     }
 
-    public void setError(String error) {
+    public void setError(final String error) {
         this.error = error;
     }
 }
@@ -412,7 +449,8 @@ class GetCardsInHandOutput {
     private int playerIdx;
     private ArrayList<CardOutput> output;
 
-    public GetCardsInHandOutput (String command, int playerIdx, ArrayList<CardOutput> output) {
+    GetCardsInHandOutput(final String command, final int playerIdx,
+                         final ArrayList<CardOutput> output) {
         this.command = command;
         this.playerIdx = playerIdx;
         this.output = output;
@@ -422,7 +460,7 @@ class GetCardsInHandOutput {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(final String command) {
         this.command = command;
     }
 
@@ -430,7 +468,7 @@ class GetCardsInHandOutput {
         return playerIdx;
     }
 
-    public void setPlayerIdx(int playerIdx) {
+    public void setPlayerIdx(final int playerIdx) {
         this.playerIdx = playerIdx;
     }
 
@@ -438,7 +476,7 @@ class GetCardsInHandOutput {
         return output;
     }
 
-    public void setOutput(ArrayList<CardOutput> output) {
+    public void setOutput(final ArrayList<CardOutput> output) {
         this.output = output;
     }
 }
@@ -448,7 +486,8 @@ class GetPLayerDeckOutput {
     private int playerIdx;
     private ArrayList<CardOutput> output;
 
-    public GetPLayerDeckOutput (String command, int playerIdx, ArrayList<CardOutput> output) {
+    GetPLayerDeckOutput(final String command, final int playerIdx,
+                        final ArrayList<CardOutput> output) {
         this.command = command;
         this.playerIdx = playerIdx;
         this.output = output;
@@ -458,7 +497,7 @@ class GetPLayerDeckOutput {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(final String command) {
         this.command = command;
     }
 
@@ -466,7 +505,7 @@ class GetPLayerDeckOutput {
         return playerIdx;
     }
 
-    public void setPlayerIdx(int playerIdx) {
+    public void setPlayerIdx(final int playerIdx) {
         this.playerIdx = playerIdx;
     }
 
@@ -474,7 +513,7 @@ class GetPLayerDeckOutput {
         return output;
     }
 
-    public void setOutput(ArrayList<CardOutput> output) {
+    public void setOutput(final ArrayList<CardOutput> output) {
         this.output = output;
     }
 }
@@ -483,7 +522,7 @@ class GetCardOnTableOutput {
     private String command;
     private ArrayList<ArrayList<MinionOutput>> output;
 
-    public GetCardOnTableOutput (String command, ArrayList<ArrayList<MinionOutput>> output) {
+    GetCardOnTableOutput(final String command, final ArrayList<ArrayList<MinionOutput>> output) {
         this.command = command;
         this.output = output;
     }
@@ -492,7 +531,7 @@ class GetCardOnTableOutput {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(final String command) {
         this.command = command;
     }
 
@@ -500,7 +539,7 @@ class GetCardOnTableOutput {
         return output;
     }
 
-    public void setOutput(ArrayList<ArrayList<MinionOutput>> output) {
+    public void setOutput(final ArrayList<ArrayList<MinionOutput>> output) {
         this.output = output;
     }
 }
@@ -509,7 +548,7 @@ class GetPlayerTurnOutput {
     private String command;
     private int output;
 
-    public GetPlayerTurnOutput(String command, int output) {
+    GetPlayerTurnOutput(final String command, final int output) {
         this.command = command;
         this.output = output;
     }
@@ -518,7 +557,7 @@ class GetPlayerTurnOutput {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(final String command) {
         this.command = command;
     }
 
@@ -526,7 +565,7 @@ class GetPlayerTurnOutput {
         return output;
     }
 
-    public void setOutput(int output) {
+    public void setOutput(final int output) {
         this.output = output;
     }
 }
@@ -536,7 +575,7 @@ class GetPlayerHeroOutput {
     private int playerIdx;
     private HeroOutput output;
 
-    public GetPlayerHeroOutput(String command, int playerIdx, HeroOutput output) {
+    GetPlayerHeroOutput(final String command, final int playerIdx, final HeroOutput output) {
         this.command = command;
         this.playerIdx = playerIdx;
         this.output = output;
@@ -546,7 +585,7 @@ class GetPlayerHeroOutput {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(final String command) {
         this.command = command;
     }
 
@@ -554,7 +593,7 @@ class GetPlayerHeroOutput {
         return playerIdx;
     }
 
-    public void setPlayerIdx(int playerIdx) {
+    public void setPlayerIdx(final int playerIdx) {
         this.playerIdx = playerIdx;
     }
 
@@ -562,7 +601,7 @@ class GetPlayerHeroOutput {
         return output;
     }
 
-    public void setOutput(HeroOutput output) {
+    public void setOutput(final HeroOutput output) {
         this.output = output;
     }
 }
@@ -574,7 +613,8 @@ class GetCardAtPositionOutputSuccess {
     private int x;
     private int y;
 
-    public GetCardAtPositionOutputSuccess(String command, int x, int y, MinionOutput output) {
+    GetCardAtPositionOutputSuccess(final String command, final int x, final int y,
+                                   final MinionOutput output) {
         this.command = command;
         this.output = output;
         this.x = x;
@@ -585,7 +625,7 @@ class GetCardAtPositionOutputSuccess {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(final String command) {
         this.command = command;
     }
 
@@ -593,7 +633,7 @@ class GetCardAtPositionOutputSuccess {
         return output;
     }
 
-    public void setOutput(MinionOutput output) {
+    public void setOutput(final MinionOutput output) {
         this.output = output;
     }
 
@@ -601,7 +641,7 @@ class GetCardAtPositionOutputSuccess {
         return x;
     }
 
-    public void setX(int x) {
+    public void setX(final int x) {
         this.x = x;
     }
 
@@ -609,7 +649,7 @@ class GetCardAtPositionOutputSuccess {
         return y;
     }
 
-    public void setY(int y) {
+    public void setY(final int y) {
         this.y = y;
     }
 }
@@ -620,7 +660,8 @@ class GetCardAtPositionOutputError {
     private int y;
     private String output;
 
-    public GetCardAtPositionOutputError(String command, int x, int y, String output) {
+    GetCardAtPositionOutputError(final String command, final int x, final int y,
+                                 final String output) {
         this.command = command;
         this.x = x;
         this.y = y;
@@ -631,7 +672,7 @@ class GetCardAtPositionOutputError {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(final String command) {
         this.command = command;
     }
 
@@ -639,7 +680,7 @@ class GetCardAtPositionOutputError {
         return x;
     }
 
-    public void setX(int x) {
+    public void setX(final int x) {
         this.x = x;
     }
 
@@ -647,7 +688,7 @@ class GetCardAtPositionOutputError {
         return y;
     }
 
-    public void setY(int y) {
+    public void setY(final int y) {
         this.y = y;
     }
 
@@ -655,7 +696,7 @@ class GetCardAtPositionOutputError {
         return output;
     }
 
-    public void setOutput(String output) {
+    public void setOutput(final String output) {
         this.output = output;
     }
 }
@@ -665,7 +706,7 @@ class GetPLayerManaOutput {
     private int playerIdx;
     private int output;
 
-    public GetPLayerManaOutput(String command, int playerIdx, int output) {
+    GetPLayerManaOutput(final String command, final int playerIdx, final int output) {
         this.command = command;
         this.playerIdx = playerIdx;
         this.output = output;
@@ -675,7 +716,7 @@ class GetPLayerManaOutput {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(final String command) {
         this.command = command;
     }
 
@@ -683,7 +724,7 @@ class GetPLayerManaOutput {
         return playerIdx;
     }
 
-    public void setPlayerIdx(int playerIdx) {
+    public void setPlayerIdx(final int playerIdx) {
         this.playerIdx = playerIdx;
     }
 
@@ -691,7 +732,7 @@ class GetPLayerManaOutput {
         return output;
     }
 
-    public void setOutput(int output) {
+    public void setOutput(final int output) {
         this.output = output;
     }
 }
@@ -701,7 +742,8 @@ class GetEnvironmentCardsInHandOutput {
     private int playerIdx;
     private ArrayList<EnvironmentOutput> output;
 
-    public GetEnvironmentCardsInHandOutput (String command, int playerIdx, ArrayList<EnvironmentOutput> output) {
+    GetEnvironmentCardsInHandOutput(final String command, final int playerIdx,
+                                    final ArrayList<EnvironmentOutput> output) {
         this.command = command;
         this.playerIdx = playerIdx;
         this.output = output;
@@ -711,7 +753,7 @@ class GetEnvironmentCardsInHandOutput {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(final String command) {
         this.command = command;
     }
 
@@ -719,7 +761,7 @@ class GetEnvironmentCardsInHandOutput {
         return playerIdx;
     }
 
-    public void setPlayerIdx(int playerIdx) {
+    public void setPlayerIdx(final int playerIdx) {
         this.playerIdx = playerIdx;
     }
 
@@ -727,7 +769,7 @@ class GetEnvironmentCardsInHandOutput {
         return output;
     }
 
-    public void setOutput(ArrayList<EnvironmentOutput> output) {
+    public void setOutput(final ArrayList<EnvironmentOutput> output) {
         this.output = output;
     }
 }
@@ -736,7 +778,7 @@ class GetFrozenCardsOnTableOutput {
     private String command;
     private ArrayList<MinionOutput> output;
 
-    public GetFrozenCardsOnTableOutput(String command, ArrayList<MinionOutput> output) {
+    GetFrozenCardsOnTableOutput(final String command, final ArrayList<MinionOutput> output) {
         this.command = command;
         this.output = output;
     }
@@ -745,7 +787,7 @@ class GetFrozenCardsOnTableOutput {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(final String command) {
         this.command = command;
     }
 
@@ -753,7 +795,7 @@ class GetFrozenCardsOnTableOutput {
         return output;
     }
 
-    public void setOutput(ArrayList<MinionOutput> output) {
+    public void setOutput(final ArrayList<MinionOutput> output) {
         this.output = output;
     }
 }
@@ -762,7 +804,7 @@ class GetTotalGamesPlayedOutput {
     private String command;
     private int output;
 
-    public GetTotalGamesPlayedOutput(String command, int output) {
+    GetTotalGamesPlayedOutput(final String command, final int output) {
         this.command = command;
         this.output = output;
     }
@@ -771,7 +813,7 @@ class GetTotalGamesPlayedOutput {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(final String command) {
         this.command = command;
     }
 
@@ -779,7 +821,7 @@ class GetTotalGamesPlayedOutput {
         return output;
     }
 
-    public void setOutput(int output) {
+    public void setOutput(final int output) {
         this.output = output;
     }
 }
@@ -788,7 +830,7 @@ class GetPlayerTotalWinsOutput {
     private String command;
     private int output;
 
-    public GetPlayerTotalWinsOutput(String command, int output) {
+    GetPlayerTotalWinsOutput(final String command, final int output) {
         this.command = command;
         this.output = output;
     }
@@ -797,7 +839,7 @@ class GetPlayerTotalWinsOutput {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(final String command) {
         this.command = command;
     }
 
@@ -805,12 +847,12 @@ class GetPlayerTotalWinsOutput {
         return output;
     }
 
-    public void setOutput(int output) {
+    public void setOutput(final int output) {
         this.output = output;
     }
 }
 
-interface CardOutput{}
+interface CardOutput { }
 
 class MinionOutput implements CardOutput {
     private int mana;
@@ -820,7 +862,7 @@ class MinionOutput implements CardOutput {
     private ArrayList<String> colors;
     private String name;
 
-    public MinionOutput(Minion minion) {
+    MinionOutput(final Minion minion) {
         this.mana = minion.getMana();
         this.attackDamage = minion.getAttackDamage();
         this.health = minion.getHealth();
@@ -833,7 +875,7 @@ class MinionOutput implements CardOutput {
         return mana;
     }
 
-    public void setMana(int mana) {
+    public void setMana(final int mana) {
         this.mana = mana;
     }
 
@@ -841,7 +883,7 @@ class MinionOutput implements CardOutput {
         return attackDamage;
     }
 
-    public void setAttackDamage(int attackDamage) {
+    public void setAttackDamage(final int attackDamage) {
         this.attackDamage = attackDamage;
     }
 
@@ -849,7 +891,7 @@ class MinionOutput implements CardOutput {
         return health;
     }
 
-    public void setHealth(int health) {
+    public void setHealth(final int health) {
         this.health = health;
     }
 
@@ -857,7 +899,7 @@ class MinionOutput implements CardOutput {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -865,7 +907,7 @@ class MinionOutput implements CardOutput {
         return colors;
     }
 
-    public void setColors(ArrayList<String> colors) {
+    public void setColors(final ArrayList<String> colors) {
         this.colors = colors;
     }
 
@@ -873,7 +915,7 @@ class MinionOutput implements CardOutput {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 }
@@ -884,7 +926,7 @@ class EnvironmentOutput implements CardOutput {
     private ArrayList<String> colors;
     private String name;
 
-    public EnvironmentOutput(Environment environment) {
+    EnvironmentOutput(final Environment environment) {
         this.mana = environment.getMana();
         this.description = environment.getDescription();
         this.colors = environment.getColors();
@@ -895,7 +937,7 @@ class EnvironmentOutput implements CardOutput {
         return mana;
     }
 
-    public void setMana(int mana) {
+    public void setMana(final int mana) {
         this.mana = mana;
     }
 
@@ -903,7 +945,7 @@ class EnvironmentOutput implements CardOutput {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -911,7 +953,7 @@ class EnvironmentOutput implements CardOutput {
         return colors;
     }
 
-    public void setColors(ArrayList<String> colors) {
+    public void setColors(final ArrayList<String> colors) {
         this.colors = colors;
     }
 
@@ -919,7 +961,7 @@ class EnvironmentOutput implements CardOutput {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 }
@@ -931,7 +973,7 @@ class HeroOutput {
     private String name;
     private int health;
 
-    public HeroOutput(Hero hero) {
+    HeroOutput(final Hero hero) {
         this.mana = hero.getMana();
         this.description = hero.getDescription();
         this.colors = hero.getColors();
@@ -943,7 +985,7 @@ class HeroOutput {
         return mana;
     }
 
-    public void setMana(int mana) {
+    public void setMana(final int mana) {
         this.mana = mana;
     }
 
@@ -951,7 +993,7 @@ class HeroOutput {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -959,7 +1001,7 @@ class HeroOutput {
         return colors;
     }
 
-    public void setColors(ArrayList<String> colors) {
+    public void setColors(final ArrayList<String> colors) {
         this.colors = colors;
     }
 
@@ -967,7 +1009,7 @@ class HeroOutput {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -975,7 +1017,7 @@ class HeroOutput {
         return health;
     }
 
-    public void setHealth(int health) {
+    public void setHealth(final int health) {
         this.health = health;
     }
 }
