@@ -19,7 +19,6 @@ public final class Player {
     private Hero hero;
     private ArrayList<Card> hand;
     private ArrayList<Card> deck;
-    private int shuffleSeed;
 
     public Player(final int id) {
         this.id = id;
@@ -55,9 +54,6 @@ public final class Player {
     public ArrayList<Card> getDeck() {
         return deck;
     }
-    public int getShuffleSeed() {
-        return shuffleSeed;
-    }
 
     /**
      * Increments the number of games won by the current player
@@ -90,7 +86,6 @@ public final class Player {
             Card aux = CardBuilder.createCard(cardInput);
             this.deck.add(aux);
         }
-        this.shuffleSeed = seed;
         this.hero = givenHero;
 
         this.firstRow = new Row();
