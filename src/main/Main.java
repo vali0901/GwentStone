@@ -9,7 +9,9 @@ import checker.CheckerConstants;
 import fileio.ActionsInput;
 import fileio.GameInput;
 import fileio.Input;
-import gameEnvironment.Table;
+import game.ActionMaker;
+import game.MagicNumbers;
+import game.Table;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +50,7 @@ public final class Main {
         Files.createDirectories(path);
 
         for (File file : Objects.requireNonNull(directory.listFiles())) {
+            System.out.println(file);
             String filepath = CheckerConstants.OUT_PATH + file.getName();
             File out = new File(filepath);
             boolean isCreated = out.createNewFile();
@@ -73,10 +76,25 @@ public final class Main {
         ArrayNode output = objectMapper.createArrayNode();
 
         //TODO add here the entry point to your implementation
-        for(GameInput gameInput : inputData.getGames()) {
+        Table.setNrGamesPlayed(0);
+        Table.getTable().getPlayerById(1).setGamesWon(0);
+        Table.getTable().getPlayerById(2).setGamesWon(0);
+        for (GameInput gameInput : inputData.getGames()) {
             Table.getTable().startGame(inputData, gameInput.getStartGame());
-            for(ActionsInput actionsInput : gameInput.getActions()) {
-
+            int counter = 0; // counting the end turns
+            int nrRounds = 1; // counting nr of rounds
+            Table.getTable().newRound(nrRounds);
+            for (ActionsInput actionsInput : gameInput.getActions()) {
+                if (ActionMaker.doAction(actionsInput, output)) {
+                    counter++;
+                    if (counter == 2) {
+                        if (nrRounds < MagicNumbers.MAX_MANA) {
+                            nrRounds++;
+                        }
+                        Table.getTable().newRound(nrRounds);
+                        counter = 0;
+                    }
+                }
             }
         }
 

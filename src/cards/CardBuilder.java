@@ -2,9 +2,15 @@ package cards;
 
 import fileio.CardInput;
 
-public class CardBuilder {
+public final class CardBuilder {
+    private CardBuilder() { }
 
-    static public Card createCard(CardInput cardInput) {
+    /**
+     * Builds a new Card based on the given cardInput
+     * @param cardInput Info needed for creating a new card (containing health, attackDamage, ...)
+     * @return Created card
+     */
+    public static Card createCard(final CardInput cardInput) {
 
         return switch (cardInput.getName()) {
             case "Sentinel" -> new Sentinel(cardInput);
