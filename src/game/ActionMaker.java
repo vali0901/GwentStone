@@ -185,7 +185,6 @@ public class ActionMaker {
                 } else if(hero.isFriendly() &&
                         ((currPlayer.getId() == 1 && (actionsInput.getAffectedRow() == 0 || actionsInput.getAffectedRow() == 1))
                         || (currPlayer.getId() == 2 && (actionsInput.getAffectedRow() == 2 || actionsInput.getAffectedRow() == 3)))) {
-                    System.out.println(hero.isFriendly());
                     OutputFactory.outputBuilder(output, actionsInput.getCommand(), actionsInput.getAffectedRow(), "Selected row does not belong to the current player.", null);
                     return false;
                 }
