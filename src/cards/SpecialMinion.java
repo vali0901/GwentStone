@@ -3,16 +3,25 @@ package cards;
 import fileio.CardInput;
 
 public abstract class SpecialMinion extends Minion {
+    /**
+     * Using ability of this special minion on other given minion
+     * @param minion The given minion
+     * @return 'true' if attacked minion's health goes below 1
+     */
     public abstract boolean ability(Minion minion);
 
-    public boolean isDisciple(){
-        return this instanceof Disciple;
+    /**
+     *
+     * @return 'true' if this Environment card is of type Disciple, 'false' otherwise
+     */
+    public boolean isDisciple() {
+        return this.getName().equals("Disciple");
     }
 }
 
 class Miraj extends SpecialMinion {
 
-    public Miraj(CardInput cardInput) {
+    Miraj(final CardInput cardInput) {
         this.setMana(cardInput.getMana());
         this.setHealth(cardInput.getHealth());
         this.setAttackDamage(cardInput.getAttackDamage());
@@ -24,7 +33,7 @@ class Miraj extends SpecialMinion {
     }
 
     @Override
-    public boolean ability(Minion minion) {
+    public boolean ability(final Minion minion) {
         this.setHasAttacked(true);
 
         int aux = this.getHealth();
@@ -37,7 +46,7 @@ class Miraj extends SpecialMinion {
 
 class TheRipper extends SpecialMinion {
 
-    public TheRipper(CardInput cardInput) {
+    TheRipper(final CardInput cardInput) {
         this.setMana(cardInput.getMana());
         this.setHealth(cardInput.getHealth());
         this.setAttackDamage(cardInput.getAttackDamage());
@@ -49,19 +58,20 @@ class TheRipper extends SpecialMinion {
     }
 
     @Override
-    public boolean ability(Minion minion) {
+    public boolean ability(final Minion minion) {
         this.setHasAttacked(true);
 
         minion.setAttackDamage(minion.getAttackDamage() - 2);
-        if(minion.getAttackDamage() < 0)
+        if (minion.getAttackDamage() < 0) {
             minion.setAttackDamage(0);
+        }
+
         return false;
-        //return  minion.isAttacked(2);
     }
 }
 
 class Disciple extends SpecialMinion {
-    public Disciple(CardInput cardInput) {
+    Disciple(final CardInput cardInput) {
         this.setMana(cardInput.getMana());
         this.setHealth(cardInput.getHealth());
         this.setAttackDamage(cardInput.getAttackDamage());
@@ -71,7 +81,7 @@ class Disciple extends SpecialMinion {
     }
 
     @Override
-    public boolean ability(Minion minion) {
+    public boolean ability(final Minion minion) {
         this.setHasAttacked(true);
         minion.setHealth(minion.getHealth() + 2);
 
@@ -81,7 +91,7 @@ class Disciple extends SpecialMinion {
 
 class TheCursedOne extends SpecialMinion {
 
-    public TheCursedOne(CardInput cardInput) {
+    TheCursedOne(final CardInput cardInput) {
         this.setMana(cardInput.getMana());
         this.setHealth(cardInput.getHealth());
         this.setAttackDamage(cardInput.getAttackDamage());
@@ -91,14 +101,13 @@ class TheCursedOne extends SpecialMinion {
     }
 
     @Override
-    public boolean ability(Minion minion) {
+    public boolean ability(final Minion minion) {
         this.setHasAttacked(true);
 
         int aux = minion.getHealth();
         minion.setHealth(minion.getAttackDamage());
         minion.setAttackDamage(aux);
-        if(minion.getHealth() <= 0)
-            return true;
-        return false;
+
+        return minion.getHealth() <= 0;
     }
 }

@@ -1,6 +1,13 @@
-# OOP Homework - GwentStone
+# GwentStone
+This is a project where some basic OOP concepts were used, displaying
+a simulation of a card game (similar to Hearthstone). For the input
+and output, the json file format is used. The input contains initial
+information such as the decks from which the players can choose and 
+then the actual actions done by each player or some requests regarding
+game information (card positions, player mana). The output is either
+an error, or it contains some requested information.
 
-## Class descrpition
+## Class description
 * **Table** class -> designed as a singleton, it has two fields representing the two **players**,
   one that counts the number of games played and another one that indicates the current
   player's id; the most important methods here are 'startGame' (which calls a method
@@ -42,4 +49,3 @@
 * **OutputFactory** class -> it has a method which adds an output in the given ArrayNode; it uses
   specific classes for every type of output
 * **MagicNumbers** class -> used for keeping useful constants
-  

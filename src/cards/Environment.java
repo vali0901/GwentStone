@@ -2,12 +2,17 @@ package cards;
 
 
 import fileio.CardInput;
-import gameEnvironment.Row;
+import game.MagicNumbers;
+import game.Row;
 
 import java.util.ArrayList;
 
 public abstract class Environment implements Card {
 
+    /**
+     *
+     * @return Always 2 (Environment type)
+     */
     @Override
     public int getType() {
         return 2;
@@ -18,47 +23,89 @@ public abstract class Environment implements Card {
     private ArrayList<String> colors;
     private String name;
 
+    /**
+     *
+     * @return Mana
+     */
     public int getMana() {
         return mana;
     }
 
-    public void setMana(int mana) {
+    /**
+     *
+     * @param mana Mana
+     */
+    public void setMana(final int mana) {
         this.mana = mana;
     }
 
+    /**
+     *
+     * @return Description
+     */
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    /**
+     *
+     * @param description Description
+     */
+    public void setDescription(final String description) {
         this.description = description;
     }
 
+    /**
+     *
+     * @return Colors
+     */
     public ArrayList<String> getColors() {
         return colors;
     }
 
-    public void setColors(ArrayList<String> colors) {
+    /**
+     *
+     * @param colors Colors
+     */
+    public void setColors(final ArrayList<String> colors) {
         this.colors = colors;
     }
 
+    /**
+     *
+     * @return Name
+     */
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    /**
+     *
+     * @param name Name
+     */
+    public void setName(final String name) {
         this.name = name;
     }
 
+    /**
+     *
+     * @return 'true' if the environment card is of type 'Heart Hound', 'false' otherwise
+     */
     public boolean isHeartHound() {
-        return this instanceof HeartHound;
+        return this.name.equals("Heart Hound");
     }
+
+    /**
+     * Using environment card's ability on a given enemy / friendly row depending on its type
+     * @param enemyMinions The enemy row
+     * @param friendlyMinions The friendly row
+     */
     public abstract void doEffect(Row enemyMinions, Row friendlyMinions);
 }
 
 class Firestorm extends  Environment {
 
-    public Firestorm(CardInput cardInput) {
+    Firestorm(final CardInput cardInput) {
         this.setMana(cardInput.getMana());
         this.setDescription(cardInput.getDescription());
         this.setColors(cardInput.getColors());
@@ -66,16 +113,18 @@ class Firestorm extends  Environment {
     }
 
     @Override
-    public void doEffect(Row enemyMinions, Row friendlyMinions) {
-        for(Minion minion : enemyMinions.getMinions())
-            if(minion != null)
+    public void doEffect(final Row enemyMinions, final Row friendlyMinions) {
+        for (Minion minion : enemyMinions.getMinions()) {
+            if (minion != null) {
                 minion.isAttacked(1);
+            }
+        }
     }
 }
 
 class Winterfell extends  Environment {
 
-    public Winterfell(CardInput cardInput) {
+    Winterfell(final CardInput cardInput) {
         this.setMana(cardInput.getMana());
         this.setDescription(cardInput.getDescription());
         this.setColors(cardInput.getColors());
@@ -83,16 +132,18 @@ class Winterfell extends  Environment {
     }
 
     @Override
-    public void doEffect(Row enemyMinions, Row friendlyMinions) {
-        for(Minion minion : enemyMinions.getMinions())
-            if(minion != null)
+    public void doEffect(final Row enemyMinions, final Row friendlyMinions) {
+        for (Minion minion : enemyMinions.getMinions()) {
+            if (minion != null) {
                 minion.setIsFrozen(true);
+            }
+        }
     }
 }
 
 class HeartHound extends  Environment {
 
-    public HeartHound(CardInput cardInput) {
+    HeartHound(final CardInput cardInput) {
         this.setMana(cardInput.getMana());
         this.setDescription(cardInput.getDescription());
         this.setColors(cardInput.getColors());
@@ -100,14 +151,16 @@ class HeartHound extends  Environment {
     }
 
     @Override
-    public void doEffect(Row enemyMinions, Row friendlyMinions) {
+    public void doEffect(final Row enemyMinions, final Row friendlyMinions) {
         Minion theStolenOne = enemyMinions.getMinion(0);
         int index = 0;
-        for(int i = 1; i < 5; i++)
-            if(enemyMinions.getMinion(i) != null && enemyMinions.getMinion(i).getHealth() > theStolenOne.getHealth()) {
+        for (int i = 1; i < MagicNumbers.MAX_ROW_LENGTH; i++) {
+            if (enemyMinions.getMinion(i) != null
+                    && enemyMinions.getMinion(i).getHealth() > theStolenOne.getHealth()) {
                 theStolenOne = enemyMinions.getMinion(i);
                 index = i;
             }
+        }
         enemyMinions.removeMinion(index);
         friendlyMinions.addMinion(theStolenOne);
     }

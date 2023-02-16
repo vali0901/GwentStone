@@ -6,6 +6,10 @@ import java.util.ArrayList;
 
 public abstract class Minion implements Card {
 
+    /**
+     *
+     * @return Always 1 (Minion type)
+     */
     @Override
     public int getType() {
         return 1;
@@ -23,126 +27,199 @@ public abstract class Minion implements Card {
     private boolean hasAttacked = false;
     private boolean firstRow = false;
 
+    /**
+     *
+     * @return Mana
+     */
     public int getMana() {
         return mana;
     }
 
-    public void setMana(int mana) {
+    /**
+     *
+     * @param mana Mana
+     */
+    public void setMana(final int mana) {
         this.mana = mana;
     }
 
+    /**
+     *
+     * @return Health
+     */
     public int getHealth() {
         return health;
     }
 
-    public void setHealth(int health) {
+    /**
+     *
+     * @param health Health
+     */
+    public void setHealth(final int health) {
         this.health = health;
     }
 
+    /**
+     *
+     * @return AttackDamage
+     */
     public int getAttackDamage() {
         return attackDamage;
     }
 
-    public void setAttackDamage(int attackDamage) {
+    /**
+     *
+     * @param attackDamage AttackDamage
+     */
+    public void setAttackDamage(final int attackDamage) {
         this.attackDamage = attackDamage;
     }
 
+    /**
+     *
+     * @return Description
+     */
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    /**
+     *
+     * @param description Description
+     */
+    public void setDescription(final String description) {
         this.description = description;
     }
 
+    /**
+     *
+     * @return Colors
+     */
     public ArrayList<String> getColors() {
         return colors;
     }
 
-    public void setColors(ArrayList<String> colors) {
+    /**
+     *
+     * @param colors Colors
+     */
+    public void setColors(final ArrayList<String> colors) {
         this.colors = colors;
     }
 
+    /**
+     *
+     * @return Name
+     */
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    /**
+     *
+     * @param name Name
+     */
+    public void setName(final String name) {
         this.name = name;
     }
 
+    /**
+     *
+     * @return 'true' if card is frozen, 'false' otherwise
+     */
     public boolean getIsFrozen() {
         return isFrozen;
     }
 
-    public void setIsFrozen(boolean frozen) {
+    /**
+     *
+     * @param frozen true / false
+     */
+    public void setIsFrozen(final boolean frozen) {
         isFrozen = frozen;
     }
 
+    /**
+     *
+     * @return 'true' if card is a 'Tank', 'false' otherwise
+     */
     public boolean getIsTank() {
         return isTank;
     }
 
-    public void setIsTank(boolean tank) {
+    /**
+     *
+     * @param tank true / false
+     */
+    public void setIsTank(final boolean tank) {
         isTank = tank;
     }
 
+    /**
+     *
+     * @return 'true' if card has attacked, 'false' otherwise
+     */
     public boolean getHasAttacked() {
         return hasAttacked;
     }
 
-    public void setHasAttacked(boolean hasAttacked) {
+    /**
+     *
+     * @param hasAttacked true / false
+     */
+    public void setHasAttacked(final boolean hasAttacked) {
         this.hasAttacked = hasAttacked;
     }
 
+    /**
+     *
+     * @return 'true' if this card can be placed only on the first row, 'false' otherwise
+     */
     public boolean getFirstRow() {
         return firstRow;
     }
 
-    public void setFirstRow(boolean firstRow) {
+    /**
+     *
+     * @param firstRow true / false
+     */
+    public void setFirstRow(final boolean firstRow) {
         this.firstRow = firstRow;
     }
 
-    public boolean attack(Minion minion) {
+    /**
+     * Using the minion's attack on other minion
+     * @param minion Attacked minion
+     * @return 'true' if the attacked minion is dead, 'false' otherwise
+     */
+    public boolean attack(final Minion minion) {
         this.hasAttacked = true;
         return minion.isAttacked(this.attackDamage);
     };
 
-    public boolean attack(Hero hero) {
+    /**
+     * Using the minion's attack on the hero
+     * @param hero Attacked hero
+     * @return 'true' if the hero is dead, 'false' otherwise
+     */
+    public boolean attack(final Hero hero) {
         this.hasAttacked = true;
         return hero.isAttacked(this.attackDamage);
     };
 
-    public boolean isAttacked(int damage) {
+    /**
+     * Minion getting attacked, his health might go below 0
+     * @param damage The damage that the minion gets
+     * @return 'true' if the minion is dead, 'false' otherwise
+     */
+    public boolean isAttacked(final int damage) {
         this.health -= damage;
         return health <= 0;
     }
-
-    @Override
-    public String toString() {
-        return "{"
-                +  "mana="
-                + mana
-                +  ", attackDamage="
-                + attackDamage
-                + ", health="
-                + health
-                +  ", description='"
-                + description
-                + '\''
-                + ", colors="
-                + colors
-                + ", name='"
-                +  ""
-                + name
-                + '\''
-                + '}';
-    }
-
 }
 
 class Sentinel extends Minion {
-    public Sentinel(CardInput cardInput) {
+    Sentinel(final CardInput cardInput) {
         this.setMana(cardInput.getMana());
         this.setHealth(cardInput.getHealth());
         this.setAttackDamage(cardInput.getAttackDamage());
@@ -156,7 +233,7 @@ class Sentinel extends Minion {
 }
 
 class Berserker extends Minion {
-    public Berserker(CardInput cardInput) {
+    Berserker(final CardInput cardInput) {
         this.setMana(cardInput.getMana());
         this.setHealth(cardInput.getHealth());
         this.setAttackDamage(cardInput.getAttackDamage());
@@ -167,12 +244,11 @@ class Berserker extends Minion {
         this.setHasAttacked(false);
         this.setIsFrozen(false);
     }
-
 }
 
 class Goliath extends Minion {
 
-    public Goliath(CardInput cardInput) {
+    Goliath(final CardInput cardInput) {
         this.setMana(cardInput.getMana());
         this.setHealth(cardInput.getHealth());
         this.setAttackDamage(cardInput.getAttackDamage());
@@ -190,7 +266,7 @@ class Goliath extends Minion {
 
 class Warden extends Minion {
 
-    public Warden(CardInput cardInput) {
+    Warden(final CardInput cardInput) {
         this.setMana(cardInput.getMana());
         this.setHealth(cardInput.getHealth());
         this.setAttackDamage(cardInput.getAttackDamage());
